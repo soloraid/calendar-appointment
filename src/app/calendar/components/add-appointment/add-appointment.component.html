@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>{{ data ? 'Edit Appointment' : 'New Appointment' }}</h1>
+<form [formGroup]="appointmentForm" (ngSubmit)="onSave()">
+  <div mat-dialog-content>
+    <mat-form-field class="w-full">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title"/>
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Date</mat-label>
+      <input matInput formControlName="date" [matDatepicker]="picker"/>
+      <mat-datepicker-toggle matSuffix [for]="picker">
+        <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
+      </mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <div class="flex items-center gap-x-2">
+      <mat-form-field class="w-full">
+        <mat-label>Start Time</mat-label>
+        <input matInput formControlName="startTime" type="time"/>
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>End Time</mat-label>
+        <input matInput formControlName="endTime" type="time"/>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field class="w-full">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="details"></textarea>
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button type="button" (click)="onCancel()">Cancel</button>
+    <button mat-button color="primary" type="submit" [disabled]="appointmentForm.invalid">Save</button>
+  </div>
+</form>

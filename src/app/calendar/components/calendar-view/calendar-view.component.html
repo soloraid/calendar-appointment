@@ -1,0 +1,48 @@
+<div class="mt-4 mx-10 p-4 border-2 border-solid border-gray-300 rounded-lg">
+  <mat-toolbar color="primary" class="flex gap-x-2 p-1">
+    <mat-icon class="cursor-pointer" (click)="sidenav.toggle()">calendar_today</mat-icon>
+    <button mat-raised-button color="primary" (click)="openAppointmentForm()">Add Appointment</button>
+  </mat-toolbar>
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #sidenav mode="over" opened>
+      <mat-calendar [(selected)]="selectedDate" (selectedChange)="onDateSelected($event); sidenav.close();"></mat-calendar>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+      <div class="day-view-header">
+        <h2>{{ selectedDate | date: 'fullDate' }}</h2>
+      </div>
+      <div class="flex flex-col cursor-pointer relative" #boundary>
+        @for (hour of hours; track hour) {
+          <div class="flex items-center px-2 gap-x-2 cursor-pointer z-0" (click)="$event.stopPropagation();openAppointmentForm({startTime: hour.toString(), date: selectedDate})">
+            <div class="flex items-center font-semibold text-gray-500 !h-[60px]">{{ hour }}</div>
+            <div class="!bg-gray-600 !w-full !h-[1px]"></div>
+          </div>
+        }
+        <div class="absolute w-full z-10">
+          @for (appointment of dayAppointments() | keyvalue; track appointment.value.id) {
+            <div cdkDrag cdkDragLockAxis="y"
+                 [cdkDragBoundary]="boundary"
+                 (cdkDragEnded)="dragEnded($event)"
+                 class="flex items-start justify-between bg-blue-500 ms-14 rounded-lg px-2 overflow-clip cursor-pointer bg-opacity-50"
+                 [cdkDragData]="appointment.value"
+                 [style.height]="appointment.value.duration | calculateHeight"
+                 [style]="appointment.value.startPosition | translateY">
+              <div class="flex flex-col gap-y-1 bg-gray-700 p-2 rounded-lg mt-2">
+                <span class="text-sm text-gray-50">{{ appointment.value.title }}</span>
+                @if (appointment.value.details) {
+                  <span class="text-xs text-gray-200">{{ appointment.value.details }}</span>
+                }
+              </div>
+              <div class="flex gap-x-1">
+                <button mat-icon-button (click)="deleteAppointment($event, appointment.value.id)">
+                  <mat-icon fontIcon="delete" class="h-4 w-4 text-base !p-0"></mat-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* Global styles or component-level SCSS */
+
+.cdk-drag-preview {
+  background-color: rgba(63, 81, 181, 0.8);
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+}
