@@ -5,7 +5,7 @@ import { CdkDrag, CdkDragEnd, CdkDropList } from '@angular/cdk/drag-drop';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatIcon } from '@angular/material/icon';
 import { MatButton, MatIconButton } from '@angular/material/button';
-import { DatePipe, KeyValuePipe } from '@angular/common';
+import { AsyncPipe, DatePipe, KeyValuePipe } from '@angular/common';
 import { AddAppointmentComponent } from '../add-appointment/add-appointment.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
@@ -13,6 +13,9 @@ import { MatCalendar } from '@angular/material/datepicker';
 import { MatLabel } from '@angular/material/form-field';
 import { TranslateYPipe } from '../../pipes/translate-y.pipe';
 import { CalculateHeightPipe } from '../../pipes/calculate-height.pipe';
+import { BehaviorSubject, distinctUntilChanged, shareReplay } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-calendar-view',
@@ -35,18 +38,28 @@ import { CalculateHeightPipe } from '../../pipes/calculate-height.pipe';
     KeyValuePipe,
     TranslateYPipe,
     CalculateHeightPipe,
+    AsyncPipe,
+    RouterLink,
   ],
 })
 export class CalendarViewComponent {
   private calendarFacade = inject(CalendarFacade);
   private dialogService = inject(MatDialog);
   dayAppointments: Signal<DayAppointments>;
-  selectedDate = new Date();
+  selectedDate = new BehaviorSubject(new Date());
   hours = Array.from({length: 24}, (_, i) => (i > 9 ? i : '0' + i) + ':00');
 
 
   constructor() {
-    this.dayAppointments = this.calendarFacade.getDayAppointments(this.selectedDate);
+    this.selectedDate
+      .pipe(
+        distinctUntilChanged(),
+        shareReplay({bufferSize: 1, refCount: true}),
+        takeUntilDestroyed(),
+      )
+      .subscribe(selectedDate => {
+      this.dayAppointments = this.calendarFacade.getDayAppointments(selectedDate);
+    })
   }
 
   dragEnded(event: CdkDragEnd<Appointment>): void {
@@ -62,8 +75,7 @@ export class CalendarViewComponent {
 
 
   onDateSelected(date: Date) {
-    this.selectedDate = date;
-    this.dayAppointments = this.calendarFacade.getDayAppointments(this.selectedDate);
+    this.selectedDate.next(date);
   }
 
   openAppointmentForm(appointmentData?: Partial<Appointment>) {

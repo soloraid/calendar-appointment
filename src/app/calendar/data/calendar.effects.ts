@@ -13,15 +13,28 @@ export class CalendarEffects {
   private snackBar = inject(MatSnackBar);
 
 
-  private addedAppointment$ = createEffect(() =>
+  private addAppointment$ = createEffect(() =>
     this.actions$.pipe(
       ofType(calendarActions.add),
+      map((payload) => {
+        return calendarActions.added({
+          appointment: payload.appointment,
+        });
+      })
+    )
+  );
+
+
+  private addedAppointment$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(calendarActions.added),
       withLatestFrom(this.store.select(calenderFeature.selectInvalidTime)),
       map(([_, invalidTime]) => {
         if (invalidTime) {
-          this.snackBar.open('Time Invalid.');
+          this.snackBar.open('Time Invalid.', null, {duration: 3000});
           return calendarActions.resetInvalidTime();
         }
+        this.snackBar.open('appointment added.', null, {duration: 3000});
         return calendarActions.noOp();
       })
     )

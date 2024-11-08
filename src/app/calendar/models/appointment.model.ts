@@ -12,3 +12,9 @@ export interface Appointment {
 export interface DayAppointments {
   [startTime: string]: Appointment;
 }
+
+export enum AppointmentStatus {
+  Added = 'added',
+  Adding = 'adding',
+  NotTriggered = 'not-triggered',
+}

@@ -1,10 +1,11 @@
 import { createFeature, createReducer, createSelector, on } from '@ngrx/store';
-import { Appointment } from '../models/appointment.model';
+import { Appointment, AppointmentStatus } from '../models/appointment.model';
 import { calendarActions } from './calendar.actions';
 
 export interface CalendarState {
   appointments: Appointment[];
   invalidTime: boolean;
+  addStatus: AppointmentStatus;
 }
 
 const initialState: CalendarState = {
@@ -31,11 +32,16 @@ const initialState: CalendarState = {
     },
   ],
   invalidTime: false,
+  addStatus: AppointmentStatus.NotTriggered,
 };
 
 const calendarReducer = createReducer(
   initialState,
-  on(calendarActions.add, (state, {appointment}) => {
+  on(calendarActions.add, (state) => ({
+    ...state,
+    addStatus: AppointmentStatus.Adding,
+  })),
+  on(calendarActions.added, (state, {appointment}) => {
     const startHour = +appointment.startTime.split(':')[0];
     const startMin = +appointment.startTime.split(':')[1];
     const endHour = +appointment.endTime.split(':')[0];
@@ -45,6 +51,7 @@ const calendarReducer = createReducer(
       return {
         ...state,
         invalidTime: true,
+        addStatus: AppointmentStatus.NotTriggered,
       }
     }
     return {
@@ -53,7 +60,8 @@ const calendarReducer = createReducer(
         ...appointment,
         duration,
         startPosition: (startHour * 60 + startMin),
-      }]
+      }],
+      addStatus: AppointmentStatus.Added,
     }
   }),
   on(calendarActions.delete, (state, {id}) => ({

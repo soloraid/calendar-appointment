@@ -6,6 +6,7 @@ export const calendarActions = createActionGroup({
   source: 'Calendar calendar',
   events: {
     add: props<{ appointment: Appointment }>(),
+    added: props<{ appointment: Appointment }>(),
     delete: props<{ id: string }>(),
     move: props<{ id: string, distanceY: number }>(),
     resetInvalidTime: emptyProps(),

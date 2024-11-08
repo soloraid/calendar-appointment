@@ -1,20 +1,20 @@
 <div class="mt-4 mx-10 p-4 border-2 border-solid border-gray-300 rounded-lg">
   <mat-toolbar color="primary" class="flex gap-x-2 p-1">
     <mat-icon class="cursor-pointer" (click)="sidenav.toggle()">calendar_today</mat-icon>
-    <button mat-raised-button color="primary" (click)="openAppointmentForm()">Add Appointment</button>
+    <button mat-raised-button color="primary" [routerLink]="['/add/appointment']">Add Appointment</button>
   </mat-toolbar>
   <mat-sidenav-container class="sidenav-container">
     <mat-sidenav #sidenav mode="over" opened>
-      <mat-calendar [(selected)]="selectedDate" (selectedChange)="onDateSelected($event); sidenav.close();"></mat-calendar>
+      <mat-calendar [selected]="selectedDate | async" (selectedChange)="onDateSelected($event); sidenav.close();"></mat-calendar>
     </mat-sidenav>
 
     <mat-sidenav-content>
       <div class="day-view-header">
-        <h2>{{ selectedDate | date: 'fullDate' }}</h2>
+        <h2>{{ selectedDate | async | date: 'fullDate' }}</h2>
       </div>
       <div class="flex flex-col cursor-pointer relative" #boundary>
         @for (hour of hours; track hour) {
-          <div class="flex items-center px-2 gap-x-2 cursor-pointer z-0" (click)="$event.stopPropagation();openAppointmentForm({startTime: hour.toString(), date: selectedDate})">
+          <div class="flex items-center px-2 gap-x-2 cursor-pointer z-0" (click)="$event.stopPropagation();openAppointmentForm({startTime: hour.toString(), date: selectedDate.getValue()})">
             <div class="flex items-center font-semibold text-gray-500 !h-[60px]">{{ hour }}</div>
             <div class="!bg-gray-600 !w-full !h-[1px]"></div>
           </div>

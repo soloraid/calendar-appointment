@@ -1,8 +1,9 @@
 import { inject, Injectable, Signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { calenderFeature } from './calendar.state';
-import { Appointment, DayAppointments } from '../models/appointment.model';
+import { Appointment, AppointmentStatus, DayAppointments } from '../models/appointment.model';
 import { calendarActions } from './calendar.actions';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +12,9 @@ export class CalendarFacade {
   private store = inject(Store);
 
 
+  get appointmentStatus(): Observable<AppointmentStatus> {
+    return this.store.select(calenderFeature.selectAddStatus);
+  }
   getDayAppointments(selectedDate: Date): Signal<DayAppointments> {
     return this.store.selectSignal(calenderFeature.selectDateAppointments(selectedDate));
   }

@@ -10,5 +10,10 @@ export const routes: Routes = [
     loadComponent: () => import('./calendar/components/calendar-view/calendar-view.component').then(c => c.CalendarViewComponent),
     providers: [provideState(calenderFeature), provideEffects(CalendarEffects)]
   },
+  {
+    path: 'add/appointment',
+    loadComponent: () => import('./calendar/components/add-appointment/add-appointment.component').then(c => c.AddAppointmentComponent),
+    providers: [provideState(calenderFeature), provideEffects(CalendarEffects)]
+  },
   {path: '', redirectTo: 'calendar', pathMatch: 'full'},
 ];
